@@ -115,5 +115,7 @@ class Settings(BaseSettings):
 
         return self
 
+    GOOGLE_API_KEY: str = ""
+
 
 settings = Settings()  # type: ignore
