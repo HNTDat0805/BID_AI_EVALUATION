@@ -1,0 +1,11 @@
+fastapi
+uvicorn
+sqlmodel
+pydantic-settings
+pytesseract
+pillow
+pdfplumber
+python-docx
+openpyxl
+python-multipart
+psycopg2-binary
