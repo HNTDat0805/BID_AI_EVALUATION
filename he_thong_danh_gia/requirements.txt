@@ -1,0 +1,11 @@
+fastapi
+openpyxl
+pandas
+pdfplumber
+psycopg2-binary
+pydantic
+pydantic-settings
+python-docx
+python-multipart
+sqlalchemy
+uvicorn
