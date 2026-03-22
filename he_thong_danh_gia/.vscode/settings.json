@@ -1,0 +1,12 @@
+{
+    "python.defaultInterpreterPath": "/home/tandat/Documents/Do-An-Co-So/venv/bin/python",
+    "python.venvPath": "/home/tandat/Documents/Do-An-Co-So",
+    "python.venvFolders": [
+        "venv"
+    ],
+    "python.analysis.extraPaths": [
+        "/home/tandat/Documents/Do-An-Co-So/venv/lib/python3.12/site-packages"
+    ],
+    "python.analysis.typeCheckingMode": "basic",
+    "python.languageServer": "Pylance"
+}
