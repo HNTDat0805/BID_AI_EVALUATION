@@ -1,4 +1,4 @@
-#!/home/tandat/Documents/Do-An-Co-So/venv/bin/python3
+#!/media/nguyen-trung-hieu/Acer1/dev/projects/BID_AI_EVALUATION/venv/bin/python3
 """Extract pdf structure in XML format"""
 
 import logging
