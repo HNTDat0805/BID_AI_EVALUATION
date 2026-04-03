@@ -10,7 +10,7 @@ from .prompts import (
 from .schemas import (
     KetQuaBaoLanh,
     KetQuaDanhGia,
-    KetQuaGiaThau,
+    KetQuaGiaThau, 
     KetQuaHienDien,
     KetQuaKyTenDongDau,
 )
@@ -126,3 +126,43 @@ class BoDanhGiaAI:
             du_lieu_dau_vao=du_lieu_dau_vao,
         )
 
+    async def run(self, text: str) -> dict:
+        """
+        Đánh giá toàn bộ 4 tiêu chí và trả về dictionary tương thích
+        với hàm danh_gia_tinh_hop_le.
+        """
+        import asyncio
+
+        # Tiêu chí cơ bản
+        tc_hien_dien = "Hồ sơ có đầy đủ các tài liệu pháp lý cơ bản không?"
+        tc_bao_lanh = "Hồ sơ có bảo đảm dự thầu (bảo lãnh) hợp lệ không?"
+        tc_gia_thau = "Giá dự thầu có được ghi rõ ràng không?"
+        tc_ky_ten = "Có chữ ký và đóng dấu hợp lệ không?"
+
+        t_hien_dien = self.danh_gia_hien_dien_ai(tc_hien_dien, text)
+        t_bao_lanh = self.danh_gia_bao_lanh_ai(tc_bao_lanh, text)
+        t_gia_thau = self.danh_gia_gia_thau_ai(tc_gia_thau, text)
+        t_ky_ten = self.danh_gia_ky_ten_dong_dau_ai(tc_ky_ten, text)
+
+        kq_hien_dien, kq_bao_lanh, kq_gia_thau, kq_ky_ten = await asyncio.gather(
+            t_hien_dien, t_bao_lanh, t_gia_thau, t_ky_ten
+        )
+
+        return {
+            "presence": {
+                "ket_qua": kq_hien_dien.ket_qua,
+                "evidence": kq_hien_dien.bang_chung_trich_dan
+            },
+            "guarantee": {
+                "ket_qua": kq_bao_lanh.ket_qua,
+                "evidence": kq_bao_lanh.bang_chung_trich_dan
+            },
+            "price": {
+                "ket_qua": kq_gia_thau.ket_qua,
+                "evidence": kq_gia_thau.bang_chung_trich_dan
+            },
+            "signature": {
+                "ket_qua": kq_ky_ten.ket_qua,
+                "evidence": kq_ky_ten.bang_chung_trich_dan
+            }
+        }
