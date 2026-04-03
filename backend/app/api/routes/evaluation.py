@@ -13,6 +13,12 @@ from app.services.parser_service import parse_ho_so
 from app.services.module_danh_gia import danh_gia_tinh_hop_le
 from app.services.ai_evaluation.evaluator import BoDanhGiaAI
 from app.services.ai_evaluation.llm_client import KhachHangLLM
+from typing import Dict, Any
+
+from app.models.evaluation_config import (
+    EvaluationConfig, CriterionConfig, RuleType, RangeCondition, BooleanCondition
+)
+from app.services.evaluation_engine import EvaluationEngine
 
 router = APIRouter(prefix="/api/danh-gia", tags=["Đánh giá"])
 nhat_ky = logging.getLogger(__name__)
@@ -164,3 +170,85 @@ def xem_ket_qua_chi_tiet(ho_so_id: int, db: Session = Depends(lay_db)):
         raise HTTPException(status_code=404, detail="Không tìm thấy kết quả đánh giá cho hồ sơ này")
         
     return ket_qua
+
+
+# ---- THÊM MỚI: ENDPOINT TEST LOGIC BẰNG RULE ENGINE VỪA TẠO ----
+
+# Hàm setup cấu hình hệ thống (Có thể load tĩnh hoặc từ cơ sở dữ liệu)
+def get_rule_engine() -> EvaluationEngine:
+    mock_config = EvaluationConfig(
+        version="1.0",
+        name="Chấm Thầu Tiêu Chuẩn",
+        total_max_score=100.0,
+        total_pass_threshold=70.0,
+        criteria=[
+            CriterionConfig(
+                id="doanh_thu", name="Doanh thu", max_score=40, pass_threshold=10,
+                is_mandatory=True, rule_type=RuleType.RANGE,
+                conditions=[
+                    RangeCondition(min_value=2e9, score=40),
+                    RangeCondition(min_value=1e9, max_value=2e9, max_inclusive=False, score=20),
+                    RangeCondition(max_value=1e9, max_inclusive=False, score=0, fail_immediately=True)
+                ]
+            ),
+            CriterionConfig(
+                id="so_nam_kinh_nghiem", name="Kinh nghiệm", max_score=30, pass_threshold=15,
+                is_mandatory=False, rule_type=RuleType.RANGE,
+                conditions=[
+                    RangeCondition(min_value=5, score=30),
+                    RangeCondition(min_value=3, max_value=5, max_inclusive=False, score=15),
+                    RangeCondition(max_value=3, max_inclusive=False, score=0)
+                ]
+            ),
+            CriterionConfig(
+                id="co_iso", name="Có ISO", max_score=30,
+                is_mandatory=False, rule_type=RuleType.BOOLEAN,
+                conditions=[
+                    BooleanCondition(expected=True, score=30),
+                    BooleanCondition(expected=False, score=0)
+                ]
+            )
+        ]
+    )
+    return EvaluationEngine(config=mock_config)
+
+
+@router.post("/cham-diem-nang-luc")
+def api_cham_diem_nang_luc(payload_data: Dict[str, Any]):
+    """
+    API mở để chấm điểm năng lực cho một danh sách/metadata thông tin được truyền lên.
+    Body truyền lên dạng Dictionary. Ví dụ:
+    { "doanh_thu": 2500000000, "so_nam_kinh_nghiem": 4, "co_iso": true }
+    """
+    try:
+        engine = get_rule_engine()
+        result = engine.evaluate(payload_data)
+        
+        # Đóng gói JSON trả về gồm tong_diem, ket_qua và details nếu có lỗi
+        response = {
+            "tong_diem": result.total_score,
+            "ket_qua": "Đạt" if result.is_passed_overall else "Không đạt",
+            "chi_tiet": [
+                {
+                    "tieu_chi": detail.criterion_name,
+                    "diem": detail.score,
+                    "ghi_chu": detail.notes
+                }
+                for _, detail in result.details.items()
+            ]
+        }
+        
+        # Đính kèm nguyên nhân fail
+        if not result.is_passed_overall:
+            response["danh_sach_loi"] = result.failed_mandatory_criteria + result.missing_data
+            
+        return response
+
+    except ValueError as e:
+        # Bắt lỗi Invalid Value Conversion nội bộ trong engine
+        nhat_ky.error(f"Lỗi Validation Dữ liệu Thầu: {str(e)}")
+        raise HTTPException(status_code=422, detail=f"Dữ liệu gửi lên không đúng định dạng: {str(e)}")
+        
+    except Exception as e:
+        nhat_ky.error(f"Lỗi chạy Engine Đánh Giá: {str(e)}")
+        raise HTTPException(status_code=500, detail="Đã xảy ra lỗi nội bộ khi xử lý chấm điểm")
