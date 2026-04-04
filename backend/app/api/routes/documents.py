@@ -20,7 +20,7 @@ from ...models import (
     DocumentRead,
     DocumentUploadResponse,
 )
-from ...services.extraction import extract_text
+from ...services.file_reader import extract_text
 
 
 router = APIRouter(tags=["documents"])

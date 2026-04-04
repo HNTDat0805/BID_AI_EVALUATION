@@ -1,0 +1,12 @@
+{
+  "permissions": {
+    "allow": [
+      "Bash(xargs grep:*)",
+      "Bash(python3 -c \"import sys; sys.path.insert\\(0, 'backend'\\); from app.api.module_upload import *\")",
+      "Bash(grep -E \"\\\\.py$\")",
+      "Bash(wc -l backend/app/**/*.py)",
+      "Bash(ls d:/BID_AI_EVALUATION/.env*)",
+      "Bash(ls d:/BID_AI_EVALUATION/backend/.env*)"
+    ]
+  }
+}
