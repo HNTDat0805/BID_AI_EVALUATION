@@ -4,8 +4,8 @@ services:
     restart: always
     environment:
       POSTGRES_USER: postgres
-      POSTGRES_PASSWORD: password
-      POSTGRES_DB: app
+      POSTGRES_PASSWORD: 123456
+      POSTGRES_DB: BID-AI-EVALUATION
     volumes:
       - pgdata:/var/lib/postgresql/data
     ports:
@@ -25,7 +25,8 @@ services:
     ports:
       - "8000:8000"
     environment:
-      DATABASE_URL: postgresql://postgres:password@db:5432/app
+      DATABASE_URL: postgresql://postgres:123456@db:5432/BID-AI-EVALUATION
+      GOOGLE_API_KEY: ${GOOGLE_API_KEY}
 
 volumes:
   pgdata:

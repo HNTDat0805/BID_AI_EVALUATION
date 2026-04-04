@@ -1,7 +1,7 @@
 import os
 import logging
 from typing import List
-from fastapi import APIRouter, Depends, HTTPException
+from fastapi import APIRouter, Body, Depends, HTTPException
 from sqlalchemy.orm import Session
 from pydantic import BaseModel
 
@@ -148,7 +148,7 @@ async def danh_gia_ho_so(yeu_cau: YeuCauChayDanhGia, db: Session = Depends(lay_d
         raise HTTPException(status_code=500, detail="Lỗi hệ thống")
 
 @router.post("/batch", response_model=List[KetQuaDanhGiaRa])
-async def danh_gia_nhieu_ho_so(danh_sach_ho_so_id: List[int], db: Session = Depends(lay_db)):
+async def danh_gia_nhieu_ho_so(danh_sach_ho_so_id: List[int] = Body(...), db: Session = Depends(lay_db)):
     danh_sach_ket_qua = []
     
     for ho_so_id in danh_sach_ho_so_id:

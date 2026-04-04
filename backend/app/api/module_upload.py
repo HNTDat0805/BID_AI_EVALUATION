@@ -2,7 +2,7 @@ from fastapi import APIRouter, UploadFile, File, Depends, HTTPException, Form
 from sqlalchemy.orm import Session
 from app.models.database import lay_db, HoSoDuThau
 from app.models.schemas import ThongBaoRa
-from app.services.module_xu_ly_tai_lieu import trich_xuat_noi_dung
+from app.services.file_reader import extract_text
 from typing import Annotated
 import shutil
 import os
@@ -37,7 +37,7 @@ async def tai_len_ho_so(
         nhat_ky.error(f"Lỗi khi lưu file {file.filename}: {loi}")
         raise HTTPException(status_code=500, detail="Lỗi hệ thống khi lưu file")
 
-    noi_dung = trich_xuat_noi_dung(duong_dan_file)
+    noi_dung = extract_text(duong_dan_file)
 
     try:
         ho_so_moi = HoSoDuThau(

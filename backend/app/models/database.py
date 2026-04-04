@@ -2,11 +2,10 @@ from sqlalchemy import create_engine, String, JSON, DateTime, ForeignKey, Text
 from sqlalchemy.orm import DeclarativeBase, sessionmaker, relationship, Mapped, mapped_column
 from typing import Dict, Any, List
 from datetime import datetime
-import os
 
-URL_CO_SO_DU_LIEU = os.getenv("URL_CO_SO_DU_LIEU", "postgresql://postgres:postgres@localhost:5432/he_thong_danh_gia")
+from app.core.config import settings
 
-engine = create_engine(URL_CO_SO_DU_LIEU)
+engine = create_engine(settings.DATABASE_URL)
 SessionLocal = sessionmaker(autocommit=False, autoflush=False, bind=engine)
 
 class Coso(DeclarativeBase):

@@ -3,10 +3,10 @@ from typing import Dict, Any, List
 
 from pydantic import BaseModel
 
-from backend.app.models.evaluation_config import (
-    EvaluationConfig, 
-    CriterionConfig, 
-    ConditionConfig, 
+from ..models.evaluation_config import (
+    EvaluationConfig,
+    CriterionConfig,
+    ConditionConfig,
     RuleType,
     RangeCondition,
     ExactMatchCondition,

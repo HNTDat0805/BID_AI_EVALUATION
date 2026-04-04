@@ -150,19 +150,19 @@ class BoDanhGiaAI:
 
         return {
             "presence": {
-                "ket_qua": kq_hien_dien.ket_qua,
-                "evidence": kq_hien_dien.bang_chung_trich_dan
+                "ket_qua": kq_hien_dien.hop_le,
+                "evidence": kq_hien_dien.lap_luan
             },
             "guarantee": {
-                "ket_qua": kq_bao_lanh.ket_qua,
-                "evidence": kq_bao_lanh.bang_chung_trich_dan
+                "ket_qua": kq_bao_lanh.hop_le,
+                "evidence": kq_bao_lanh.lap_luan
             },
             "price": {
-                "ket_qua": kq_gia_thau.ket_qua,
-                "evidence": kq_gia_thau.bang_chung_trich_dan
+                "ket_qua": kq_gia_thau.hop_le,
+                "evidence": kq_gia_thau.lap_luan
             },
             "signature": {
-                "ket_qua": kq_ky_ten.ket_qua,
-                "evidence": kq_ky_ten.bang_chung_trich_dan
+                "ket_qua": kq_ky_ten.hop_le,
+                "evidence": kq_ky_ten.lap_luan
             }
         }
